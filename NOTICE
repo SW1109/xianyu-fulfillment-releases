@@ -31,3 +31,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+This product includes the unmodified noVNC 1.5.0 browser client.
+Copyright (C) The noVNC Authors.
+License: Mozilla Public License, version 2.0 (MPL-2.0).
+Corresponding source: https://github.com/novnc/noVNC/tree/v1.5.0
+License texts and authors are distributed under webui/third-party/novnc/.
+Only this third-party component is covered by its own licenses; the application
+continues to use the license stated above.
