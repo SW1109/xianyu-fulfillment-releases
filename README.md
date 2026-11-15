@@ -6,6 +6,8 @@
 
 国内镜像：https://gitee.com/wang-xiushang/xianyu-fulfillment-releases/releases
 
+CNB 国内试用源：https://cnb.cool/nexlyaihub/xianyu-fulfillment-releases
+
 ## 支持环境
 
 - Linux x86_64、Docker Engine、Docker Compose v2、Python 3、systemd、OpenSSL、curl、flock。
@@ -63,6 +65,10 @@ WebSocket Upgrade 配置。
 
 ### 国内镜像与下载源选择
 
+从 v1.2.7 起增加 CNB，配套宿主机组件的自动顺序为 CNB → Gitee → GitHub，只尝试已配置的仓库。CNB 当前使用公开 Git 原始文件提供版本清单、小包和 SHA-256 文件，无需登录即可检查与下载；未使用需要发布权限的 CNB 发行版 API。维护脚本把 Git 直链试用包限制为20MiB以内，较大包须先迁移存储方式。CNB 占用免费额度，不配置付费预算，平台额度或政策变化时可以切回其他来源。
+
+升级旧宿主机组件后可添加 `UPDATE_CNB_REPOSITORY=nexlyaihub/xianyu-fulfillment-releases`。显式设为空可关闭 CNB；自建 GitHub 更新仓库时，未配置的官方 CNB 镜像默认关闭，避免混用不同项目。网页升级只更新应用，需在没有进行中任务时备份并替换宿主机 `update_agent.py`，重启 `guangnian-xianyu-update.service`。来源选择、失败回退、摘要校验与限流冷却规则和已有镜像一致。
+
 从 v1.1.2 起，版本浮层提供“自动选择 / GitHub / Gitee”下载源。选择自动保存到服务器，页面刷新或升级组件重启后仍保留。切换会清除旧的可升级结果，需要重新检查更新；版本任务运行时不能切换。
 
 Gitee 镜像仓库须公开且允许匿名下载，只存放安装包、校验文件和发布说明。默认已提供以下更新源；部署者也可在 `/opt/guangnian-xianyu/update.env` 中配置自己的仓库：
@@ -70,10 +76,11 @@ Gitee 镜像仓库须公开且允许匿名下载，只存放安装包、校验�
 ```ini
 UPDATE_REPOSITORY=SW1109/xianyu-fulfillment-releases
 UPDATE_GITEE_REPOSITORY=wang-xiushang/xianyu-fulfillment-releases
+UPDATE_CNB_REPOSITORY=nexlyaihub/xianyu-fulfillment-releases
 UPDATE_DOWNLOAD_SOURCE=auto
 ```
 
-`UPDATE_DOWNLOAD_SOURCE` 是首次使用的默认值，可选 `auto`、`github`、`gitee`；网页保存的实例偏好优先。显式配置 `UPDATE_GITEE_REPOSITORY=` 可关闭 Gitee，页面对应选项显示“未配置”；自建 GitHub 源且未设置 Gitee 配置时，默认关闭官方 Gitee 镜像，避免混用其他项目。自动模式先读取 Gitee，连接不可用或镜像仍在预发布时尝试 GitHub。下载连接中断后只允许切换到同一版本、同一大小和同一 SHA-256 的备用包；摘要错误直接停止。手动选择只使用指定来源，页面显示本次实际来源。镜像同步可能稍晚于主发布，手动选择 GitHub 可检查主源。
+`UPDATE_DOWNLOAD_SOURCE` 是首次使用的默认值，可选 `auto`、`github`、`gitee`、`cnb`；网页保存的实例偏好优先。显式配置 `UPDATE_GITEE_REPOSITORY=` 可关闭 Gitee，页面对应选项显示“未配置”；自建 GitHub 源且未设置 Gitee 配置时，默认关闭官方 Gitee 镜像，避免混用其他项目。自动模式按 CNB、Gitee、GitHub 顺序尝试，连接不可用或镜像仍在预发布时使用下一来源。下载连接中断后只允许切换到同一版本、同一大小和同一 SHA-256 的备用包；摘要错误直接停止。手动选择只使用指定来源，页面显示本次实际来源。镜像同步可能稍晚于主发布，手动选择 GitHub 可检查主源。
 
 旧版宿主机升级组件需要单独更新一次：在没有进行中版本任务时，备份现有 `update_agent.py`，将新包中的同名文件替换到部署目录，保留原有 `update.env` 并补充镜像配置，再执行 `systemctl restart guangnian-xianyu-update.service`。应用升级不会自动替换宿主机脚本；仅重启该升级组件不会升级应用。不要在正在安装或回退时替换组件。
 
@@ -83,7 +90,7 @@ UPDATE_DOWNLOAD_SOURCE=auto
 
 收到 HTTP 429 或带明确限流信息的 HTTP 403 后，该来源按五、十、二十、四十、六十分钟逐步冷却；服务端 `Retry-After` 或配额重置时间要求更久时遵守更长等待。冷却期间不向该来源发请求，也不自动安装；等待结束后，下次检查或下载才允许重试，成功后重置退避。普通权限错误不会误显示为限流。冷却记录按来源和仓库保存在 `.updates/source-cooldowns.json`，切换来源或重启组件不会绕过等待。
 
-自动模式跳过受限来源并尝试备用源，现有版本面板会显示限流、剩余等待秒数及回退来源；这些秒数对应最近一次检查，需点击检查更新重新计算。手动模式保持指定来源，等待结束或由管理员切换。两个来源均失败时分别保留原因，不将旧检查结果标成当前可升级版本。安装包完整性不匹配仍直接停止。
+自动模式跳过受限来源并尝试备用源，现有版本面板会显示限流、剩余等待秒数及回退来源；这些秒数对应最近一次检查，需点击检查更新重新计算。手动模式保持指定来源，等待结束或由管理员切换。所有来源均失败时分别保留原因，不将旧检查结果标成当前可升级版本。安装包完整性不匹配仍直接停止。
 
 维护者在私有源码工作区使用 `node tools/release/mirror-gitee-release.mjs --repository 你的账号/xianyu-fulfillment-releases --tag v1.1.2-gn1` 镜像已公开的 GitHub 版本。工具先创建 Gitee 预发布，上传两个附件并匿名下载核对完整摘要，再转为正式版本；同名正式发布不覆盖。Windows 可先运行 `tools/release/connect-gitee.ps1` 隐藏输入 Gitee 发布令牌，其他环境可通过维护进程的 `GITEE_TOKEN` 提供授权。安装实例不需要、也不应保存该发布令牌。
 
