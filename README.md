@@ -1,7 +1,9 @@
-# 光年闲鱼助手 v1.2.7
+# 光年闲鱼助手 v1.2.8
 
-- 新增 CNB 国内下载源，支持“自动 / CNB / GitHub”切换，自动模式优先 CNB。
-- 自动迁移已停用的下载源设置，保留下载进度、完整性校验、备份和回退保护。
-- 支持将套餐规则同步到已发卡密，题库冲突新增待处理和已跳过分类统计。
+- 业务列表默认每页 50 条，可切换 25 / 50 / 100 条；表头与分页固定，列表内容独立滚动。
+- 工作台整合经营趋势、商品排行、插件调用、题库、成本及售后数据，增加大屏模式与动态效果，精简重复数据和提示。
+- 更新简洁 Logo，完善深浅主题；修复图表金额名称、日期轴裁切、悬浮提示和自动化页签文字颜色。
+- 优化自动化操作按钮、筛选和翻页体验，修复快速翻页被重置、删除末页记录后页码异常等问题。
+- 合并题目版本历史功能，可在题目详情核对编辑或审核覆盖前的答案。
 
-[下载安装包](https://github.com/SW1109/xianyu-fulfillment-releases/releases/download/v1.2.7-gn1/guangnian-xianyu-1.2.7-gn1.tar.gz) · [校验文件](https://github.com/SW1109/xianyu-fulfillment-releases/releases/download/v1.2.7-gn1/guangnian-xianyu-1.2.7-gn1.tar.gz.sha256)
+[下载安装包](https://github.com/SW1109/xianyu-fulfillment-releases/releases/download/v1.2.8-gn1/guangnian-xianyu-1.2.8-gn1.tar.gz) · [校验文件](https://github.com/SW1109/xianyu-fulfillment-releases/releases/download/v1.2.8-gn1/guangnian-xianyu-1.2.8-gn1.tar.gz.sha256)
